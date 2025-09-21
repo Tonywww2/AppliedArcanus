@@ -1,13 +1,3 @@
 {
-  "itemGroup.forbidden_arcanus_automation": "Example Mod Tab",
-  "block.forbidden_arcanus_automation.example_block": "Example Block",
-  "item.forbidden_arcanus_automation.example_item": "Example Item",
-
-  "forbidden_arcanus_automation.configuration.title": " Forbidden Arcanus Automation Configs",
-  "forbidden_arcanus_automation.configuration.section.forbidden_arcanus_automation.common.toml": " Forbidden Arcanus Automation Configs",
-  "forbidden_arcanus_automation.configuration.section.forbidden_arcanus_automation.common.toml.title": " Forbidden Arcanus Automation Configs",
-  "forbidden_arcanus_automation.configuration.items": "Item List",
-  "forbidden_arcanus_automation.configuration.logDirtBlock": "Log Dirt Block",
-  "forbidden_arcanus_automation.configuration.magicNumberIntroduction": "Magic Number Text",
-  "forbidden_arcanus_automation.configuration.magicNumber": "Magic Number"
+  "itemGroup.applied_arcanus.main": "Applied Arcanus"
 }

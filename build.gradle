@@ -141,6 +141,11 @@ dependencies {
     implementation "curse.maven:forbidden-arcanus-309858:6875895"
     implementation "curse.maven:applied-energistics-2-223794:6977949"
 
+    runtimeOnly "curse.maven:integrated-dynamics-236307:6864751"
+    runtimeOnly "curse.maven:cyclops-core-232758:6864888"
+    runtimeOnly "curse.maven:common-capabilities-247007:6888589"
+    runtimeOnly "curse.maven:integrated-tunnels-251389:6864813"
+
 }
 
 // This block of code expands all declared replace properties in the specified resource targets.

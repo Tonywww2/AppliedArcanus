@@ -22,7 +22,7 @@ import net.neoforged.neoforge.event.server.ServerStartingEvent;
 @Mod(AppliedArcanus.MODID)
 public class AppliedArcanus {
 
-        public static final String MODID = "applied_arcanus";
+    public static final String MODID = "applied_arcanus";
     public static final Logger LOGGER = LogUtils.getLogger();
 
     public static final RegistryManager REGISTRY_MANAGER = new RegistryManager(new ModRegistryCollector(AppliedArcanus.MODID));
