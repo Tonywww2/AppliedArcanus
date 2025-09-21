@@ -1,4 +1,4 @@
-package com.tonywww.forbidden_arcanus_automation.init;
+package com.tonywww.applied_arcanus.init;
 
 import net.valhelsia.valhelsia_core.api.common.registry.RegistryCollector;
 

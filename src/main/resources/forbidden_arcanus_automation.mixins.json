@@ -1,6 +1,6 @@
 {
   "required": true,
-  "package": "com.tonywww.forbidden_arcanus_automation.mixin",
+  "package": "com.tonywww.applied_arcanus.mixin",
   "compatibilityLevel": "JAVA_21",
   "mixins": [],
   "injectors": {

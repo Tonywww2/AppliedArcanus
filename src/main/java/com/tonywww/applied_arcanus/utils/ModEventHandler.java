@@ -1,4 +1,4 @@
-package com.tonywww.forbidden_arcanus_automation.utils;
+package com.tonywww.applied_arcanus.utils;
 
 import net.neoforged.bus.api.IEventBus;
 import net.valhelsia.valhelsia_core.core.neoforge.ValhelsiaForgeEventHandler;

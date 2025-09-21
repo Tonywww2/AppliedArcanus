@@ -1,4 +1,4 @@
-package com.tonywww.forbidden_arcanus_automation;
+package com.tonywww.applied_arcanus;
 
 import net.minecraft.client.Minecraft;
 import net.neoforged.api.distmarker.Dist;
@@ -11,11 +11,11 @@ import net.neoforged.neoforge.client.gui.ConfigurationScreen;
 import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
 
 // This class will not load on dedicated servers. Accessing client side code from here is safe.
-@Mod(value = ForbiddenArcanusAutomation.MODID, dist = Dist.CLIENT)
+@Mod(value = AppliedArcanus.MODID, dist = Dist.CLIENT)
 // You can use EventBusSubscriber to automatically register all static methods in the class annotated with @SubscribeEvent
-@EventBusSubscriber(modid = ForbiddenArcanusAutomation.MODID, value = Dist.CLIENT)
-public class ForbiddenArcanusAutomationClient {
-    public ForbiddenArcanusAutomationClient(ModContainer container) {
+@EventBusSubscriber(modid = AppliedArcanus.MODID, value = Dist.CLIENT)
+public class AppliedArcanusClient {
+    public AppliedArcanusClient(ModContainer container) {
         // Allows NeoForge to create a config screen for this mod's configs.
         // The config screen is accessed by going to the Mods screen > clicking on your mod > clicking on config.
         // Do not forget to add translations for your config options to the en_us.json file.
@@ -25,7 +25,7 @@ public class ForbiddenArcanusAutomationClient {
     @SubscribeEvent
     static void onClientSetup(FMLClientSetupEvent event) {
         // Some client setup code
-        ForbiddenArcanusAutomation.LOGGER.info("HELLO FROM CLIENT SETUP");
-        ForbiddenArcanusAutomation.LOGGER.info("MINECRAFT NAME >> {}", Minecraft.getInstance().getUser().getName());
+        AppliedArcanus.LOGGER.info("HELLO FROM CLIENT SETUP");
+        AppliedArcanus.LOGGER.info("MINECRAFT NAME >> {}", Minecraft.getInstance().getUser().getName());
     }
 }

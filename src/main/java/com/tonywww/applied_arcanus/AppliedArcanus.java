@@ -1,7 +1,7 @@
-package com.tonywww.forbidden_arcanus_automation;
+package com.tonywww.applied_arcanus;
 
-import com.tonywww.forbidden_arcanus_automation.utils.ModEventHandler;
-import com.tonywww.forbidden_arcanus_automation.init.ModRegistryCollector;
+import com.tonywww.applied_arcanus.utils.ModEventHandler;
+import com.tonywww.applied_arcanus.init.ModRegistryCollector;
 import net.valhelsia.valhelsia_core.api.common.registry.RegistryManager;
 import net.valhelsia.valhelsia_core.core.ModDefinition;
 import org.slf4j.Logger;
@@ -19,18 +19,18 @@ import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.neoforge.event.server.ServerStartingEvent;
 
 // The value here should match an entry in the META-INF/neoforge.mods.toml file
-@Mod(ForbiddenArcanusAutomation.MODID)
-public class ForbiddenArcanusAutomation {
+@Mod(AppliedArcanus.MODID)
+public class AppliedArcanus {
 
-        public static final String MODID = "forbidden_arcanus_automation";
+        public static final String MODID = "applied_arcanus";
     public static final Logger LOGGER = LogUtils.getLogger();
 
-    public static final RegistryManager REGISTRY_MANAGER = new RegistryManager(new ModRegistryCollector(ForbiddenArcanusAutomation.MODID));
+    public static final RegistryManager REGISTRY_MANAGER = new RegistryManager(new ModRegistryCollector(AppliedArcanus.MODID));
 
     // The constructor for the mod class is the first code that is run when your mod is loaded.
     // FML will recognize some parameter types like IEventBus or ModContainer and pass them in automatically.
-    public ForbiddenArcanusAutomation(IEventBus modEventBus, ModContainer modContainer) {
-        ModDefinition.of(ForbiddenArcanusAutomation.MODID)
+    public AppliedArcanus(IEventBus modEventBus, ModContainer modContainer) {
+        ModDefinition.of(AppliedArcanus.MODID)
                 .withRegistryManager(REGISTRY_MANAGER)
                 .withEventHandler(new ModEventHandler(modEventBus))
                 .create();
