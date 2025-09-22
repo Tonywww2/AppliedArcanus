@@ -1,8 +1,11 @@
 {
   "required": true,
-  "package": "com.tonywww.applied_arcanus.mixin",
+  "package": "com.tonywww.applied_arcanus.mixins",
   "compatibilityLevel": "JAVA_21",
-  "mixins": [],
+  "mixins": [
+    "ActiveRitualDataAccessor",
+    "RitualManagerAccessor"
+  ],
   "injectors": {
     "defaultRequire": 1
   },

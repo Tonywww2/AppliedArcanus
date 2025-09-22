@@ -141,6 +141,8 @@ dependencies {
     implementation "curse.maven:forbidden-arcanus-309858:6875895"
     implementation "curse.maven:applied-energistics-2-223794:6977949"
 
+    implementation("net.createmod.ponder:Ponder-NeoForge-1.21.1:${ponder_version}")
+
     runtimeOnly "curse.maven:integrated-dynamics-236307:6864751"
     runtimeOnly "curse.maven:cyclops-core-232758:6864888"
     runtimeOnly "curse.maven:common-capabilities-247007:6888589"

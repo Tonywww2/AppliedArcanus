@@ -1,12 +1,17 @@
 package com.tonywww.applied_arcanus.blocks.entity;
 
+import com.mojang.authlib.GameProfile;
 import com.stal111.forbidden_arcanus.common.block.entity.PedestalBlockEntity;
+import com.stal111.forbidden_arcanus.common.block.entity.forge.ritual.ActiveRitualData;
+import com.stal111.forbidden_arcanus.common.block.entity.forge.ritual.RitualManager;
 import com.stal111.forbidden_arcanus.common.block.pedestal.effect.PedestalEffectTrigger;
 import com.stal111.forbidden_arcanus.common.essence.EssenceValue;
 import com.stal111.forbidden_arcanus.core.init.ModDataComponents;
 import com.tonywww.applied_arcanus.init.ModBlockEntities;
 import com.stal111.forbidden_arcanus.common.block.HephaestusForgeBlock;
 import com.stal111.forbidden_arcanus.common.block.entity.forge.HephaestusForgeBlockEntity;
+import com.tonywww.applied_arcanus.mixins.ActiveRitualDataAccessor;
+import com.tonywww.applied_arcanus.mixins.RitualManagerAccessor;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
@@ -17,6 +22,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.capabilities.ICapabilityProvider;
+import net.neoforged.neoforge.common.util.FakePlayer;
 import net.neoforged.neoforge.items.IItemHandler;
 import net.neoforged.neoforge.items.ItemStackHandler;
 import org.jetbrains.annotations.NotNull;
@@ -24,6 +30,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 public class HephaestusForgeSupplierBlockEntity extends BlockEntity implements WorldlyContainer, ICapabilityProvider<BlockEntity, Direction, IItemHandler> {
     private static final int FORGE_SLOTS = 5;
@@ -34,31 +41,51 @@ public class HephaestusForgeSupplierBlockEntity extends BlockEntity implements W
     private List<PedestalBlockEntity> pedestalBlockEntities;
     private IItemHandler proxyItemHandler;
 
+    private FakePlayer fakePlayer;
+
     public HephaestusForgeSupplierBlockEntity(BlockPos pos, BlockState state) {
         super(ModBlockEntities.HEPHAESTUS_FORGE_SUPPLIER.get(), pos, state);
     }
 
-    public static void serverTick(Level level, BlockPos pos, BlockState state, HephaestusForgeSupplierBlockEntity entity) {
+    public static void serverTick(Level level, BlockPos pos, BlockState state, HephaestusForgeSupplierBlockEntity blockEntity) {
         BlockPos below = pos.below();
         BlockState belowState = level.getBlockState(below);
         if (belowState.getBlock() instanceof HephaestusForgeBlock) {
             BlockEntity be = level.getBlockEntity(below);
             if (be instanceof HephaestusForgeBlockEntity forgeEntity) {
-                entity.forgeBlockEntity = forgeEntity;
-                entity.pedestalBlockEntities = entity.collectPedestals((ServerLevel) level, below);
+                blockEntity.forgeBlockEntity = forgeEntity;
+                blockEntity.pedestalBlockEntities = blockEntity.collectPedestals((ServerLevel) level, below);
 
-                if (entity.proxyItemHandler == null) {
-                    entity.proxyItemHandler = entity.new ProxyItemHandler();
+                if (blockEntity.proxyItemHandler == null) {
+                    blockEntity.proxyItemHandler = blockEntity.new ProxyItemHandler();
                 }
+                if (blockEntity.fakePlayer == null) {
+                    GameProfile gameProfile = new GameProfile(UUID.randomUUID(), "HephaestusForgeSupplier");
+                    blockEntity.fakePlayer = new FakePlayer((ServerLevel) level, gameProfile);
+                    blockEntity.fakePlayer.setPos(pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5);
+                }
+
                 forgeEntity.setChanged();
-                for (PedestalBlockEntity pedestal : entity.pedestalBlockEntities) {
+                for (PedestalBlockEntity pedestal : blockEntity.pedestalBlockEntities) {
                     pedestal.setChanged();
                 }
 
-//                forgeEntity.getRitualManager().startRitual(serverPlayer, blockEntity.getEssenceManager().getStorage())
+                RitualManager ritualManager = blockEntity.forgeBlockEntity.getRitualManager();
+                if (ritualManager.getValidRitual().isPresent()) {
+                    ActiveRitualData data = ((RitualManagerAccessor) ritualManager).getActiveRitualDataField();
+                    if (data == null) {
+                        forgeEntity.getRitualManager().startRitual(blockEntity.fakePlayer, blockEntity.forgeBlockEntity.getEssenceManager().getStorage());
+                    } else {
+                        int counter = data.getCounter();
+
+                        ActiveRitualDataAccessor accessor = (ActiveRitualDataAccessor) data;
+                        accessor.setCounter(Math.min(data.getRitual().duration(), counter + 10));
+                    }
+                }
+
             } else {
-                entity.forgeBlockEntity = null;
-                entity.proxyItemHandler = null;
+                blockEntity.forgeBlockEntity = null;
+                blockEntity.proxyItemHandler = null;
             }
         }
     }

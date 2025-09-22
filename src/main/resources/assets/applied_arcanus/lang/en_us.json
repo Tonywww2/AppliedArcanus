@@ -1,3 +1,6 @@
 {
-  "itemGroup.applied_arcanus.main": "Applied Arcanus"
+  "itemGroup.applied_arcanus.main": "Applied Arcanus",
+
+  "item.applied_arcanus.blood_source": "Blood Source",
+  "block.applied_arcanus.hephaestus_forge_supplier": "Hephaestus Forge Supplier"
 }
