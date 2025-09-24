@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "forbidden_arcanus:blood_test_tube"
+    }
+  ],
+  "result": {
+    "count": 1,
+    "id": "applied_arcanus:blood_source"
+  }
+}

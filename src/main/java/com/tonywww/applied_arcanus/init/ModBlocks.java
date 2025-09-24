@@ -12,7 +12,10 @@ public class ModBlocks implements RegistryClass {
     public static final BlockRegistryHelper HELPER = AppliedArcanus.REGISTRY_MANAGER.getBlockHelper();
 
     public static final BlockRegistryEntry<HephaestusForgeSupplierBlock> HEPHAESTUS_FORGE_SUPPLIER = HELPER.register("hephaestus_forge_supplier",
-            () -> new HephaestusForgeSupplierBlock(Block.Properties.ofLegacyCopy(Blocks.STONE).strength(4.5F, 8.0F)))
+            () -> new HephaestusForgeSupplierBlock(Block.Properties.ofLegacyCopy(Blocks.STONE)
+                    .strength(2.0F, 8.0F)
+                    .requiresCorrectToolForDrops()
+            ))
             .withItem();
 
 

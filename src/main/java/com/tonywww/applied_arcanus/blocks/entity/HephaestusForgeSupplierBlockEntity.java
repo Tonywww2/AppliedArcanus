@@ -37,11 +37,15 @@ public class HephaestusForgeSupplierBlockEntity extends BlockEntity implements W
 
     public static final int FORGE_MAIN_SLOT = HephaestusForgeBlockEntity.MAIN_SLOT - 4;
 
+    public static final int MAX_UPGRADE_COUNT = 4;
+
     private HephaestusForgeBlockEntity forgeBlockEntity;
     private List<PedestalBlockEntity> pedestalBlockEntities;
     private IItemHandler proxyItemHandler;
 
     private FakePlayer fakePlayer;
+
+    public int upgradeCount = 0;
 
     public HephaestusForgeSupplierBlockEntity(BlockPos pos, BlockState state) {
         super(ModBlockEntities.HEPHAESTUS_FORGE_SUPPLIER.get(), pos, state);
@@ -79,7 +83,8 @@ public class HephaestusForgeSupplierBlockEntity extends BlockEntity implements W
                         int counter = data.getCounter();
 
                         ActiveRitualDataAccessor accessor = (ActiveRitualDataAccessor) data;
-                        accessor.setCounter(Math.min(data.getRitual().duration(), counter + 10));
+                        int toAccelerate  = 8 * blockEntity.upgradeCount;
+                        accessor.setCounter(Math.min(data.getRitual().duration(), counter + toAccelerate));
                     }
                 }
 
