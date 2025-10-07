@@ -1,0 +1,30 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "A": {
+      "item": "minecraft:iron_ingot"
+    },
+    "B": {
+      "item": "forbidden_arcanus:mundabitur_dust"
+    },
+    "C": {
+      "item": "ae2:pattern_provider"
+    },
+    "D": {
+      "item": "forbidden_arcanus:netherite_blacksmith_gavel"
+    },
+    "E": {
+      "item": "forbidden_arcanus:eternal_stella"
+    }
+  },
+  "pattern": [
+    "ABA",
+    "CDC",
+    "AEA"
+  ],
+  "result": {
+    "count": 1,
+    "id": "applied_arcanus:hephaestus_forge_supplier"
+  }
+}
