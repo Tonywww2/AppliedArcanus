@@ -1,6 +1,7 @@
 package com.tonywww.applied_arcanus.init;
 
 import com.tonywww.applied_arcanus.AppliedArcanus;
+import com.tonywww.applied_arcanus.blocks.AdvancedClibanoBlock;
 import com.tonywww.applied_arcanus.blocks.HephaestusForgeSupplierBlock;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
@@ -16,6 +17,14 @@ public class ModBlocks implements RegistryClass {
                     .strength(2.0F, 8.0F)
                     .requiresCorrectToolForDrops()
             ))
+            .withItem();
+
+    public static final BlockRegistryEntry<AdvancedClibanoBlock> ADVANCED_CLIBANO = HELPER.register("advanced_clibano",
+                    () -> new AdvancedClibanoBlock(Block.Properties.ofLegacyCopy(Blocks.FURNACE)
+                            .strength(3.5F)
+                            .requiresCorrectToolForDrops()
+                            .lightLevel(state -> state.getValue(AdvancedClibanoBlock.LIT) ? 13 : 0)
+                    ))
             .withItem();
 
 

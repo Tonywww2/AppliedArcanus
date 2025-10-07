@@ -21,6 +21,7 @@ public class ModCreativeModeTabs implements RegistryClass {
                             output.accept(ModItems.BLOOD_SOURCE.get());
 
                             output.accept(ModBlocks.HEPHAESTUS_FORGE_SUPPLIER.get());
+                            output.accept(ModBlocks.ADVANCED_CLIBANO.get());
                         });
             })
     );

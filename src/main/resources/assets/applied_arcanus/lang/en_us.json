@@ -2,5 +2,7 @@
   "itemGroup.applied_arcanus.main": "Applied Arcanus",
 
   "item.applied_arcanus.blood_source": "Blood Source",
-  "block.applied_arcanus.hephaestus_forge_supplier": "Hephaestus Forge Supplier"
+  "block.applied_arcanus.hephaestus_forge_supplier": "Hephaestus Forge Supplier",
+
+  "container.applied_arcanus.advanced_clibano": "Advanced Clibano"
 }
