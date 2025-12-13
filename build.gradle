@@ -18,8 +18,13 @@ version = mod_version
 group = mod_group_id
 
 repositories {
+    mavenCentral()
     maven {
         url "https://cursemaven.com"
+    }
+    maven {
+        name = "Modrinth"
+        url = "https://api.modrinth.com/maven"
     }
     maven {
         // location of the maven that hosts JEI files since January 2023
@@ -131,15 +136,12 @@ configurations {
 }
 
 dependencies {
-    compileOnly("mezz.jei:jei-${minecraft_version}-neoforge-api:${jei_version}")
-    // at runtime, use the full JEI jar for NeoForge
     runtimeOnly("mezz.jei:jei-${minecraft_version}-neoforge:${jei_version}")
 
     implementation "net.valhelsia:valhelsia_core-neoforge-${minecraft_version}:${valhelsia_core_version}"
-    implementation "curse.maven:guideme-1173950:6812025"
 
     implementation "curse.maven:forbidden-arcanus-309858:6875895"
-    implementation "curse.maven:applied-energistics-2-223794:6977949"
+    implementation "org.appliedenergistics:appliedenergistics2:${ae_version}"
 
     implementation("net.createmod.ponder:Ponder-NeoForge-1.21.1:${ponder_version}")
 
@@ -147,6 +149,7 @@ dependencies {
     runtimeOnly "curse.maven:cyclops-core-232758:6864888"
     runtimeOnly "curse.maven:common-capabilities-247007:6888589"
     runtimeOnly "curse.maven:integrated-tunnels-251389:6864813"
+    runtimeOnly "maven.modrinth:mekanism:10.7.13.78" // 使用mek的管道等物品进行测试
 
 }
 
