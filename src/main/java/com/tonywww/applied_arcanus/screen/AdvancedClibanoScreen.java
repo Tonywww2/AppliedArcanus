@@ -12,8 +12,7 @@ import net.minecraft.world.entity.player.Inventory;
 import org.jetbrains.annotations.NotNull;
 
 public class AdvancedClibanoScreen extends AbstractContainerScreen<AdvancedClibanoMenu> {
-    private static final ResourceLocation TEXTURE =
-            ResourceLocation.fromNamespaceAndPath(AppliedArcanus.MODID, "textures/gui/advanced_clibano.png");
+    private static final ResourceLocation TEXTURE = AppliedArcanus.makeId("textures/gui/advanced_clibano.png");
 
     public AdvancedClibanoScreen(AdvancedClibanoMenu menu, Inventory playerInventory, Component title) {
         super(menu, playerInventory, title);

@@ -2,6 +2,7 @@ package com.tonywww.applied_arcanus;
 
 import com.tonywww.applied_arcanus.utils.ModEventHandler;
 import com.tonywww.applied_arcanus.init.ModRegistryCollector;
+import net.minecraft.resources.ResourceLocation;
 import net.valhelsia.valhelsia_core.api.common.registry.RegistryManager;
 import net.valhelsia.valhelsia_core.core.ModDefinition;
 import org.slf4j.Logger;
@@ -27,8 +28,6 @@ public class AppliedArcanus {
 
     public static final RegistryManager REGISTRY_MANAGER = new RegistryManager(new ModRegistryCollector(AppliedArcanus.MODID));
 
-    // The constructor for the mod class is the first code that is run when your mod is loaded.
-    // FML will recognize some parameter types like IEventBus or ModContainer and pass them in automatically.
     public AppliedArcanus(IEventBus modEventBus, ModContainer modContainer) {
         ModDefinition.of(AppliedArcanus.MODID)
                 .withRegistryManager(REGISTRY_MANAGER)
@@ -41,22 +40,14 @@ public class AppliedArcanus {
     }
 
     private void commonSetup(FMLCommonSetupEvent event) {
-        // Some common setup code
-        LOGGER.info("HELLO FROM COMMON SETUP");
-
-        if (Config.LOG_DIRT_BLOCK.getAsBoolean()) {
-            LOGGER.info("DIRT BLOCK >> {}", BuiltInRegistries.BLOCK.getKey(Blocks.DIRT));
-        }
-
-        LOGGER.info("{}{}", Config.MAGIC_NUMBER_INTRODUCTION.get(), Config.MAGIC_NUMBER.getAsInt());
-
-        Config.ITEM_STRINGS.get().forEach((item) -> LOGGER.info("ITEM >> {}", item));
     }
 
-    // You can use SubscribeEvent and let the Event Bus discover methods to call
     @SubscribeEvent
     public void onServerStarting(ServerStartingEvent event) {
-        // Do something when the server starts
-        LOGGER.info("HELLO from server starting");
+        LOGGER.info("Applied Arcanus is starting on the server");
+    }
+
+    public static ResourceLocation makeId(String path) {
+        return ResourceLocation.fromNamespaceAndPath(MODID, path);
     }
 }
