@@ -1,23 +1,20 @@
 package com.tonywww.applied_arcanus;
 
-import com.tonywww.applied_arcanus.utils.ModEventHandler;
+import com.mojang.logging.LogUtils;
+import com.tonywww.applied_arcanus.init.ModMenus;
 import com.tonywww.applied_arcanus.init.ModRegistryCollector;
+import com.tonywww.applied_arcanus.utils.ModEventHandler;
 import net.minecraft.resources.ResourceLocation;
+import net.neoforged.bus.api.IEventBus;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.ModContainer;
+import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.config.ModConfig;
+import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
+import net.neoforged.neoforge.event.server.ServerStartingEvent;
 import net.valhelsia.valhelsia_core.api.common.registry.RegistryManager;
 import net.valhelsia.valhelsia_core.core.ModDefinition;
 import org.slf4j.Logger;
-
-import com.mojang.logging.LogUtils;
-
-import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.world.level.block.Blocks;
-import net.neoforged.bus.api.IEventBus;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.Mod;
-import net.neoforged.fml.config.ModConfig;
-import net.neoforged.fml.ModContainer;
-import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
-import net.neoforged.neoforge.event.server.ServerStartingEvent;
 
 // The value here should match an entry in the META-INF/neoforge.mods.toml file
 @Mod(AppliedArcanus.MODID)
@@ -37,6 +34,8 @@ public class AppliedArcanus {
         modEventBus.addListener(this::commonSetup);
 
         modContainer.registerConfig(ModConfig.Type.COMMON, Config.SPEC);
+
+        ModMenus.registerMenus(modEventBus);
     }
 
     private void commonSetup(FMLCommonSetupEvent event) {

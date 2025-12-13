@@ -13,14 +13,14 @@ public class ModBlocks implements RegistryClass {
     public static final BlockRegistryHelper HELPER = AppliedArcanus.REGISTRY_MANAGER.getBlockHelper();
 
     public static final BlockRegistryEntry<HephaestusForgeSupplierBlock> HEPHAESTUS_FORGE_SUPPLIER = HELPER.register("hephaestus_forge_supplier",
-            () -> new HephaestusForgeSupplierBlock(Block.Properties.ofLegacyCopy(Blocks.STONE)
+            () -> new HephaestusForgeSupplierBlock(Block.Properties.ofFullCopy(Blocks.STONE)
                     .strength(2.0F, 8.0F)
                     .requiresCorrectToolForDrops()
             ))
             .withItem();
 
     public static final BlockRegistryEntry<AdvancedClibanoBlock> ADVANCED_CLIBANO = HELPER.register("advanced_clibano",
-                    () -> new AdvancedClibanoBlock(Block.Properties.ofLegacyCopy(Blocks.FURNACE)
+                    () -> new AdvancedClibanoBlock(Block.Properties.ofFullCopy(Blocks.FURNACE)
                             .strength(3.5F)
                             .requiresCorrectToolForDrops()
                             .lightLevel(state -> state.getValue(AdvancedClibanoBlock.LIT) ? 13 : 0)

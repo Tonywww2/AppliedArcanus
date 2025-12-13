@@ -1,27 +1,36 @@
 package com.tonywww.applied_arcanus.blocks.entity;
 
+import appeng.api.upgrades.IUpgradeInventory;
+import appeng.api.upgrades.IUpgradeableObject;
+import appeng.api.upgrades.UpgradeInventories;
+import appeng.blockentity.AEBaseBlockEntity;
+import appeng.blockentity.ServerTickingBlockEntity;
+import appeng.core.definitions.AEItems;
 import com.mojang.authlib.GameProfile;
+import com.stal111.forbidden_arcanus.common.block.HephaestusForgeBlock;
 import com.stal111.forbidden_arcanus.common.block.entity.PedestalBlockEntity;
+import com.stal111.forbidden_arcanus.common.block.entity.forge.HephaestusForgeBlockEntity;
 import com.stal111.forbidden_arcanus.common.block.entity.forge.ritual.ActiveRitualData;
 import com.stal111.forbidden_arcanus.common.block.entity.forge.ritual.RitualManager;
 import com.stal111.forbidden_arcanus.common.block.pedestal.effect.PedestalEffectTrigger;
 import com.stal111.forbidden_arcanus.common.essence.EssenceValue;
 import com.stal111.forbidden_arcanus.core.init.ModDataComponents;
 import com.tonywww.applied_arcanus.init.ModBlockEntities;
-import com.stal111.forbidden_arcanus.common.block.HephaestusForgeBlock;
-import com.stal111.forbidden_arcanus.common.block.entity.forge.HephaestusForgeBlockEntity;
+import com.tonywww.applied_arcanus.init.ModBlocks;
 import com.tonywww.applied_arcanus.mixins.ActiveRitualDataAccessor;
 import com.tonywww.applied_arcanus.mixins.RitualManagerAccessor;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.world.WorldlyContainer;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
-import net.neoforged.neoforge.capabilities.ICapabilityProvider;
+import net.neoforged.neoforge.capabilities.Capabilities;
+import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
 import net.neoforged.neoforge.common.util.FakePlayer;
 import net.neoforged.neoforge.items.IItemHandler;
 import net.neoforged.neoforge.items.ItemStackHandler;
@@ -32,67 +41,74 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-public class HephaestusForgeSupplierBlockEntity extends BlockEntity implements WorldlyContainer, ICapabilityProvider<BlockEntity, Direction, IItemHandler> {
-    private static final int FORGE_SLOTS = 5;
+public class HephaestusForgeSupplierBlockEntity extends AEBaseBlockEntity implements ServerTickingBlockEntity,
+        IUpgradeableObject
+{
 
+    private static final int FORGE_SLOTS = 5;
     public static final int FORGE_MAIN_SLOT = HephaestusForgeBlockEntity.MAIN_SLOT - 4;
 
-    public static final int MAX_UPGRADE_COUNT = 4;
+    private final IUpgradeInventory upgrades = UpgradeInventories.forMachine(ModBlocks.HEPHAESTUS_FORGE_SUPPLIER.get(), 4, this::onUpgradesChanged);
 
-    private HephaestusForgeBlockEntity forgeBlockEntity;
+    private @Nullable HephaestusForgeBlockEntity forgeBlockEntity;
     private List<PedestalBlockEntity> pedestalBlockEntities;
-    private IItemHandler proxyItemHandler;
-
+    private final IItemHandler proxyItemHandler;
     private FakePlayer fakePlayer;
-
     public int upgradeCount = 0;
 
-    public HephaestusForgeSupplierBlockEntity(BlockPos pos, BlockState state) {
-        super(ModBlockEntities.HEPHAESTUS_FORGE_SUPPLIER.get(), pos, state);
+
+    public HephaestusForgeSupplierBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state) {
+        super(type, pos, state);
+        // ProxyItemHandler已经根据forgeBlockEntity的状态做过判空，因此其本身可以始终保持非空状态
+        proxyItemHandler = new ProxyItemHandler();
     }
 
-    public static void serverTick(Level level, BlockPos pos, BlockState state, HephaestusForgeSupplierBlockEntity blockEntity) {
-        BlockPos below = pos.below();
-        BlockState belowState = level.getBlockState(below);
-        if (belowState.getBlock() instanceof HephaestusForgeBlock) {
-            BlockEntity be = level.getBlockEntity(below);
-            if (be instanceof HephaestusForgeBlockEntity forgeEntity) {
-                blockEntity.forgeBlockEntity = forgeEntity;
-                blockEntity.pedestalBlockEntities = blockEntity.collectPedestals((ServerLevel) level, below);
+    public static void onRegisterCaps(RegisterCapabilitiesEvent event)
+    {
+        event.registerBlockEntity(
+                Capabilities.ItemHandler.BLOCK,
+                ModBlockEntities.HEPHAESTUS_FORGE_SUPPLIER.get(),
+                (be, direction) -> {
+                    IItemHandler base = be.proxyItemHandler;
+                    if (base == null) return null;
 
-                if (blockEntity.proxyItemHandler == null) {
-                    blockEntity.proxyItemHandler = blockEntity.new ProxyItemHandler();
-                }
-                if (blockEntity.fakePlayer == null) {
-                    GameProfile gameProfile = new GameProfile(UUID.randomUUID(), "HephaestusForgeSupplier");
-                    blockEntity.fakePlayer = new FakePlayer((ServerLevel) level, gameProfile);
-                    blockEntity.fakePlayer.setPos(pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5);
-                }
-
-                forgeEntity.setChanged();
-                for (PedestalBlockEntity pedestal : blockEntity.pedestalBlockEntities) {
-                    pedestal.setChanged();
-                }
-
-                RitualManager ritualManager = blockEntity.forgeBlockEntity.getRitualManager();
-                if (ritualManager.getValidRitual().isPresent()) {
-                    ActiveRitualData data = ((RitualManagerAccessor) ritualManager).getActiveRitualDataField();
-                    if (data == null) {
-                        forgeEntity.getRitualManager().startRitual(blockEntity.fakePlayer, blockEntity.forgeBlockEntity.getEssenceManager().getStorage());
-                    } else {
-                        int counter = data.getCounter();
-
-                        ActiveRitualDataAccessor accessor = (ActiveRitualDataAccessor) data;
-                        int toAccelerate  = 8 * blockEntity.upgradeCount;
-                        accessor.setCounter(Math.min(data.getRitual().duration(), counter + toAccelerate));
+                    // UP（以及 null）允许抽取；其余方向禁止抽取
+                    if (direction == null || direction == Direction.UP) {
+                        return base;
                     }
-                }
 
-            } else {
-                blockEntity.forgeBlockEntity = null;
-                blockEntity.proxyItemHandler = null;
-            }
-        }
+                    // 返回一个禁止抽取的包装类
+                    return new IItemHandler() {
+                        @Override public int getSlots() { return base.getSlots(); }
+                        @Override public @NotNull ItemStack getStackInSlot(int slot) { return base.getStackInSlot(slot); }
+                        @Override public int getSlotLimit(int slot) { return base.getSlotLimit(slot); }
+                        @Override public boolean isItemValid(int slot, @NotNull ItemStack stack) { return base.isItemValid(slot, stack); }
+
+                        @Override
+                        public @NotNull ItemStack insertItem(int slot, @NotNull ItemStack stack, boolean simulate) {
+                            return base.insertItem(slot, stack, simulate);
+                        }
+
+                        @Override
+                        public @NotNull ItemStack extractItem(int slot, int amount, boolean simulate) {
+                            return ItemStack.EMPTY;
+                        }
+                    };
+                }
+        );
+    }
+
+
+    public void onUpgradesChanged()
+    {
+        this.upgradeCount = upgrades.getInstalledUpgrades(AEItems.SPEED_CARD);
+        setChanged();
+    }
+
+    @Override
+    public IUpgradeInventory getUpgrades()
+    {
+        return upgrades;
     }
 
     private List<PedestalBlockEntity> collectPedestals(ServerLevel level, BlockPos pos) {
@@ -116,6 +132,80 @@ public class HephaestusForgeSupplierBlockEntity extends BlockEntity implements W
         }
         return out;
 
+    }
+
+    @Override
+    public void serverTick() {
+        if(level == null) return;
+
+        BlockPos pos = this.getBlockPos();
+        BlockPos below = pos.below();
+        BlockState belowState = level.getBlockState(below);
+        if (belowState.getBlock() instanceof HephaestusForgeBlock) {
+            BlockEntity be = level.getBlockEntity(below);
+            if (be instanceof HephaestusForgeBlockEntity forgeEntity) {
+                this.forgeBlockEntity = forgeEntity;
+                this.pedestalBlockEntities = this.collectPedestals((ServerLevel) level, below);
+
+                if (this.fakePlayer == null) {
+                    GameProfile gameProfile = new GameProfile(UUID.randomUUID(), "HephaestusForgeSupplier");
+                    this.fakePlayer = new FakePlayer((ServerLevel) level, gameProfile);
+                    this.fakePlayer.setPos(pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5);
+                }
+
+                forgeEntity.setChanged();
+                for (PedestalBlockEntity pedestal : this.pedestalBlockEntities) {
+                    pedestal.setChanged();
+                }
+
+                RitualManager ritualManager = this.forgeBlockEntity.getRitualManager();
+                if (ritualManager.getValidRitual().isPresent()) {
+                    ActiveRitualData data = ((RitualManagerAccessor) ritualManager).getActiveRitualDataField();
+                    if (data == null) {
+                        forgeEntity.getRitualManager().startRitual(this.fakePlayer, this.forgeBlockEntity.getEssenceManager().getStorage());
+                    } else {
+                        int counter = data.getCounter();
+
+                        ActiveRitualDataAccessor accessor = (ActiveRitualDataAccessor) data;
+                        int toAccelerate  = 8 * this.upgradeCount;
+                        accessor.setCounter(Math.min(data.getRitual().duration(), counter + toAccelerate));
+                    }
+                }
+
+            } else {
+                this.forgeBlockEntity = null;
+            }
+        }
+    }
+
+    @Override
+    public void saveAdditional(CompoundTag data, HolderLookup.Provider registries)
+    {
+        super.saveAdditional(data, registries);
+        this.upgrades.writeToNBT(data, "upgrades", registries);
+    }
+
+    @Override
+    public void loadTag(CompoundTag data, HolderLookup.Provider registries)
+    {
+        super.loadTag(data, registries);
+        this.upgrades.readFromNBT(data, "upgrades", registries);
+    }
+
+    @Override
+    public void addAdditionalDrops(Level level, BlockPos pos, List<ItemStack> drops)
+    {
+        super.addAdditionalDrops(level, pos, drops);
+        for(ItemStack stack : upgrades) {
+            drops.add(stack);
+        }
+    }
+
+    @Override
+    public void clearContent()
+    {
+        super.clearContent();
+        this.upgrades.clear();
     }
 
     private class ProxyItemHandler implements IItemHandler {
@@ -209,111 +299,5 @@ public class HephaestusForgeSupplierBlockEntity extends BlockEntity implements W
             }
             return false;
         }
-    }
-
-    @Override
-    public @Nullable IItemHandler getCapability(BlockEntity blockEntity, Direction context) {
-        if (this.proxyItemHandler != null) {
-            return this.proxyItemHandler;
-        }
-        return null;
-    }
-
-    @Override
-    public int @NotNull [] getSlotsForFace(Direction side) {
-        if (forgeBlockEntity == null) {
-            return new int[0];
-        }
-        int totalSlots = FORGE_SLOTS + pedestalBlockEntities.size();
-        int[] slots = new int[totalSlots];
-        for (int i = 0; i < totalSlots; i++) {
-            slots[i] = i;
-        }
-
-        return slots;
-    }
-
-    @Override
-    public boolean canPlaceItemThroughFace(int index, ItemStack itemStack, @Nullable Direction direction) {
-        if (forgeBlockEntity == null) return false;
-        if (index >= 1 && index <= 4 && itemStack.getComponents().has(ModDataComponents.ESSENCE_VALUE.get())) {
-            EssenceValue essenceValue = itemStack.getComponents().get(ModDataComponents.ESSENCE_VALUE.get());
-            if (essenceValue != null) {
-                int forgeSlot = HephaestusForgeBlockEntity.SLOT_FROM_ESSENCE_TYPE_MAP.get(essenceValue.type());
-                // 检查目标槽位是否为空
-                return index == (forgeSlot - 4) && forgeBlockEntity.getItemStackHandler().getStackInSlot(forgeSlot).isEmpty();
-            }
-        }
-        if (index == 0 && forgeBlockEntity.getItemStackHandler().getStackInSlot(4).isEmpty()) {
-            return true;
-        }
-        if (index >= FORGE_SLOTS && index < FORGE_SLOTS + pedestalBlockEntities.size()) {
-            PedestalBlockEntity pedestalBlockEntity = pedestalBlockEntities.get(index - FORGE_SLOTS);
-            return pedestalBlockEntity.getStack().isEmpty();
-        }
-        return false;
-    }
-
-    @Override
-    public boolean canTakeItemThroughFace(int index, ItemStack stack, Direction direction) {
-        return direction == Direction.UP && index < FORGE_SLOTS + pedestalBlockEntities.size();
-    }
-
-    @Override
-    public int getContainerSize() {
-        return forgeBlockEntity == null ?
-                0 :
-                (FORGE_SLOTS + pedestalBlockEntities.size());
-    }
-
-    @Override
-    public boolean isEmpty() {
-        if (forgeBlockEntity != null) {
-            for (int i = 4; i < 9; i++) {
-                if (!forgeBlockEntity.getItemStackHandler().getStackInSlot(i).isEmpty()) {
-                    return false;
-                }
-            }
-
-            for (PedestalBlockEntity pedestal : pedestalBlockEntities) {
-                if (!pedestal.getStack().isEmpty()) {
-                    return false;
-                }
-            }
-        }
-        return true;
-    }
-
-    @Override
-    public ItemStack getItem(int i) {
-        return proxyItemHandler != null ? proxyItemHandler.getStackInSlot(i) : ItemStack.EMPTY;
-    }
-
-    @Override
-    public ItemStack removeItem(int slot, int amount) {
-        return proxyItemHandler != null ? proxyItemHandler.extractItem(slot, amount, false) : ItemStack.EMPTY;
-    }
-
-    @Override
-    public ItemStack removeItemNoUpdate(int slot) {
-        if (proxyItemHandler == null) return ItemStack.EMPTY;
-        ItemStack stack = proxyItemHandler.extractItem(slot, 1, false);
-        return stack;
-    }
-
-    @Override
-    public void setItem(int slot, ItemStack stack) {
-        if (proxyItemHandler != null) {
-            proxyItemHandler.insertItem(slot, stack, false);
-        }
-    }
-
-    @Override
-    public boolean stillValid(Player player) {
-        return true;
-    }
-
-    @Override
-    public void clearContent() {
     }
 }
