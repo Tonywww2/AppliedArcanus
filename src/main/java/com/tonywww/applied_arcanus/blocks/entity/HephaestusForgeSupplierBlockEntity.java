@@ -1,5 +1,6 @@
 package com.tonywww.applied_arcanus.blocks.entity;
 
+import appeng.api.inventories.InternalInventory;
 import appeng.api.upgrades.IUpgradeInventory;
 import appeng.api.upgrades.IUpgradeableObject;
 import appeng.api.upgrades.UpgradeInventories;
@@ -52,7 +53,7 @@ public class HephaestusForgeSupplierBlockEntity extends AEBaseBlockEntity implem
 
     private @Nullable HephaestusForgeBlockEntity forgeBlockEntity;
     private List<PedestalBlockEntity> pedestalBlockEntities;
-    private final IItemHandler proxyItemHandler;
+    private final InternalInventory proxyItemHandler;
     private FakePlayer fakePlayer;
     public int upgradeCount = 0;
 
@@ -69,7 +70,7 @@ public class HephaestusForgeSupplierBlockEntity extends AEBaseBlockEntity implem
                 Capabilities.ItemHandler.BLOCK,
                 ModBlockEntities.HEPHAESTUS_FORGE_SUPPLIER.get(),
                 (be, direction) -> {
-                    IItemHandler base = be.proxyItemHandler;
+                    IItemHandler base = be.proxyItemHandler.toItemHandler();
                     if (base == null) return null;
 
                     // UP（以及 null）允许抽取；其余方向禁止抽取
@@ -208,10 +209,11 @@ public class HephaestusForgeSupplierBlockEntity extends AEBaseBlockEntity implem
         this.upgrades.clear();
     }
 
-    private class ProxyItemHandler implements IItemHandler {
+    private class ProxyItemHandler implements InternalInventory {
+
         @Override
-        public int getSlots() {
-            return 5 + pedestalBlockEntities.size();
+        public int size() {
+            return FORGE_SLOTS + (pedestalBlockEntities == null ? 0 : pedestalBlockEntities.size());
         }
 
         @Override
@@ -226,6 +228,29 @@ public class HephaestusForgeSupplierBlockEntity extends AEBaseBlockEntity implem
                 return pedestalBlockEntities.get(pedestalIndex).getStack();
             }
             return ItemStack.EMPTY;
+        }
+
+        @Override
+        public void setItemDirect(int slot, ItemStack stack) {
+            if (forgeBlockEntity == null) return;
+
+            if (slot < FORGE_SLOTS) {
+                ItemStackHandler handler = forgeBlockEntity.getItemStackHandler();
+                handler.setStackInSlot(slot + 4, stack);
+                forgeBlockEntity.setChanged();
+                return;
+            }
+
+            int idx = slot - FORGE_SLOTS;
+            if (pedestalBlockEntities != null && idx >= 0 && idx < pedestalBlockEntities.size()) {
+                var pedestal = pedestalBlockEntities.get(idx);
+                if (stack.isEmpty()) {
+                    pedestal.setStack(ItemStack.EMPTY, null, PedestalEffectTrigger.PLAYER_REMOVE_ITEM);
+                } else {
+                    pedestal.setStack(stack, null, PedestalEffectTrigger.PLAYER_PLACE_ITEM);
+                }
+                pedestal.setChanged();
+            }
         }
 
         @Override
@@ -246,7 +271,7 @@ public class HephaestusForgeSupplierBlockEntity extends AEBaseBlockEntity implem
                     }
                 }
                 return stack;
-            } else if (slot < getSlots()) {
+            } else if (slot < size()) {
                 PedestalBlockEntity pedestalBlockEntity = pedestalBlockEntities.get(slot - FORGE_SLOTS);
                 if (pedestalBlockEntity.getStack().isEmpty()) {
                     if (!simulate) {
@@ -265,7 +290,7 @@ public class HephaestusForgeSupplierBlockEntity extends AEBaseBlockEntity implem
             if (forgeBlockEntity == null) return ItemStack.EMPTY;
             if (slot < FORGE_SLOTS) {
                 return forgeBlockEntity.getItemStackHandler().extractItem(slot + 4, amount, simulate);
-            } else if (slot < getSlots()) {
+            } else if (slot < size()) {
                 PedestalBlockEntity pedestalBlockEntity = pedestalBlockEntities.get(slot - FORGE_SLOTS);
                 if (simulate) {
                     return pedestalBlockEntity.getStack().copy();
@@ -283,7 +308,7 @@ public class HephaestusForgeSupplierBlockEntity extends AEBaseBlockEntity implem
             if (forgeBlockEntity == null) return 0;
             if (slot < FORGE_SLOTS) {
                 return forgeBlockEntity.getItemStackHandler().getSlotLimit(slot + 4);
-            } else if (slot < getSlots()) {
+            } else if (slot < size()) {
                 return 1;
             }
             return 0;
@@ -294,7 +319,7 @@ public class HephaestusForgeSupplierBlockEntity extends AEBaseBlockEntity implem
             if (forgeBlockEntity == null) return false;
             if (slot < FORGE_SLOTS) {
                 return forgeBlockEntity.getItemStackHandler().isItemValid(slot + 4, stack);
-            } else if (slot < getSlots()) {
+            } else if (slot < size()) {
                 return pedestalBlockEntities.get(slot - FORGE_SLOTS).getStack().isEmpty();
             }
             return false;
