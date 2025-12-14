@@ -112,6 +112,11 @@ public class HephaestusForgeSupplierBlockEntity extends AEBaseBlockEntity implem
         return upgrades;
     }
 
+    public InternalInventory getProxyItemHandler()
+    {
+        return proxyItemHandler;
+    }
+
     private List<PedestalBlockEntity> collectPedestals(ServerLevel level, BlockPos pos) {
         List<BlockEntity> tempList = new ArrayList<>(9);
         List<PedestalBlockEntity> out = new ArrayList<>(9);

@@ -32,8 +32,12 @@ public class ModBlockEntities implements RegistryClass {
             ModBlocks.HEPHAESTUS_FORGE_SUPPLIER
     );
 
-    public static final RegistryEntry<BlockEntityType<?>, BlockEntityType<AdvancedClibanoBlockEntity>> ADVANCED_CLIBANO = HELPER.register("advanced_clibano",
-            () -> BlockEntityType.Builder.of(AdvancedClibanoBlockEntity::new, ModBlocks.ADVANCED_CLIBANO.get()).build(null));
+    public static final RegistryEntry<BlockEntityType<?>, BlockEntityType<AdvancedClibanoBlockEntity>> ADVANCED_CLIBANO = createAe(
+            "advanced_clibano",
+            AdvancedClibanoBlockEntity.class,
+            AdvancedClibanoBlockEntity::new,
+            ModBlocks.ADVANCED_CLIBANO
+    );
 
 
     @SafeVarargs

@@ -1,21 +1,20 @@
 package com.tonywww.applied_arcanus.blocks;
 
-import com.mojang.serialization.MapCodec;
+import appeng.block.AEBaseEntityBlock;
+import appeng.menu.MenuOpener;
+import appeng.menu.locator.MenuLocators;
 import com.tonywww.applied_arcanus.blocks.entity.AdvancedClibanoBlockEntity;
-import com.tonywww.applied_arcanus.init.ModBlockEntities;
+import com.tonywww.applied_arcanus.init.ModMenus;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionResult;
-import net.minecraft.world.MenuProvider;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.*;
-import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.world.level.block.entity.BlockEntityTicker;
-import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Mirror;
+import net.minecraft.world.level.block.RenderShape;
+import net.minecraft.world.level.block.Rotation;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
@@ -25,9 +24,8 @@ import net.minecraft.world.phys.BlockHitResult;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public class AdvancedClibanoBlock extends BaseEntityBlock {
-    public static final MapCodec<AdvancedClibanoBlock> CODEC = simpleCodec(AdvancedClibanoBlock::new);
-
+public class AdvancedClibanoBlock extends AEBaseEntityBlock<AdvancedClibanoBlockEntity>
+{
     public static final DirectionProperty FACING = BlockStateProperties.HORIZONTAL_FACING;
     public static final BooleanProperty LIT = BlockStateProperties.LIT;
 
@@ -36,11 +34,6 @@ public class AdvancedClibanoBlock extends BaseEntityBlock {
         this.registerDefaultState(this.stateDefinition.any()
                 .setValue(FACING, Direction.NORTH)
                 .setValue(LIT, false));
-    }
-
-    @Override
-    protected MapCodec<? extends BaseEntityBlock> codec() {
-        return CODEC;
     }
 
     @Override
@@ -57,47 +50,17 @@ public class AdvancedClibanoBlock extends BaseEntityBlock {
 
     @Override
     protected @NotNull InteractionResult useWithoutItem(@NotNull BlockState state, @NotNull Level level, @NotNull BlockPos pos, @NotNull Player player, @NotNull BlockHitResult hitResult) {
-        if (!level.isClientSide && player instanceof ServerPlayer serverPlayer) {
-            BlockEntity blockEntity = level.getBlockEntity(pos);
-            if (blockEntity instanceof AdvancedClibanoBlockEntity) {
-                 serverPlayer.openMenu((MenuProvider) blockEntity, pos);
-            }
+        super.useWithoutItem(state,level,pos,player,hitResult);
+        if(!level.isClientSide()&&!player.isShiftKeyDown()) {
+            if(level.getBlockEntity(pos) instanceof AdvancedClibanoBlockEntity be)
+                MenuOpener.open(ModMenus.ADVANCED_CLIBANO_MENU.get(), player, MenuLocators.forBlockEntity(be));
         }
-        return InteractionResult.sidedSuccess(level.isClientSide);
+        return InteractionResult.SUCCESS_NO_ITEM_USED;
     }
 
     @Override
     protected @NotNull RenderShape getRenderShape(@NotNull BlockState state) {
         return RenderShape.MODEL;
-    }
-
-    @Override
-    public void onRemove(@NotNull BlockState state, @NotNull Level level, @NotNull BlockPos pos, @NotNull BlockState newState, boolean isMoving) {
-        if (!state.is(newState.getBlock())) {
-            BlockEntity blockEntity = level.getBlockEntity(pos);
-            if (blockEntity instanceof AdvancedClibanoBlockEntity entity) {
-                // 掉落物品
-                for (int i = 0; i < entity.getItemHandler().getSlots(); i++) {
-                    ItemStack stack = entity.getItemHandler().getStackInSlot(i);
-                    if (!stack.isEmpty()) {
-                        popResource(level, pos, stack);
-                    }
-                }
-            }
-            super.onRemove(state, level, pos, newState, isMoving);
-        }
-    }
-
-    @Nullable
-    @Override
-    public BlockEntity newBlockEntity(@NotNull BlockPos pos, @NotNull BlockState state) {
-        return new AdvancedClibanoBlockEntity(pos, state);
-    }
-
-    @Nullable
-    @Override
-    public <T extends BlockEntity> BlockEntityTicker<T> getTicker(@NotNull Level level, @NotNull BlockState state, @NotNull BlockEntityType<T> blockEntityType) {
-        return level.isClientSide ? null : createTickerHelper(blockEntityType, ModBlockEntities.ADVANCED_CLIBANO.get(), AdvancedClibanoBlockEntity::tick);
     }
 
     @Override

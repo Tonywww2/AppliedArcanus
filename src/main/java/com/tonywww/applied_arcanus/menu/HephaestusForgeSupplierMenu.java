@@ -20,7 +20,9 @@ public class HephaestusForgeSupplierMenu extends UpgradeableMenu<HephaestusForge
     @Override
     protected void setupInventorySlots()
     {
-
+        // TODO 添加slot后，手动指定槽位位置
+        // 0-4为锻炉槽位，放在中间
+        // 5-12为周围祭坛，放到外围围一圈
     }
 
     @Override

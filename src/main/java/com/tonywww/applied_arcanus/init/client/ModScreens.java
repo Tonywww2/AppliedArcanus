@@ -2,6 +2,7 @@ package com.tonywww.applied_arcanus.init.client;
 
 import com.tonywww.applied_arcanus.AppliedArcanus;
 import com.tonywww.applied_arcanus.init.ModMenus;
+import com.tonywww.applied_arcanus.screen.AdvancedClibanoScreen;
 import com.tonywww.applied_arcanus.screen.HephaestusForgeSupplierScreen;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -15,5 +16,6 @@ public class ModScreens
     public static void registerScreens(RegisterMenuScreensEvent event)
     {
         event.register(ModMenus.HEPHAESTUS_FORGE_SUPPLIER_MENU.get(), HephaestusForgeSupplierScreen::new);
+        event.register(ModMenus.ADVANCED_CLIBANO_MENU.get(), AdvancedClibanoScreen::new);
     }
 }
