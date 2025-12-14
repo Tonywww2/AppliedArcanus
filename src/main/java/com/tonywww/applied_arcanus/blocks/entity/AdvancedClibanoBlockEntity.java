@@ -202,4 +202,21 @@ public class AdvancedClibanoBlockEntity extends AEBaseBlockEntity implements Cli
     {
         return cookingProgress[0];
     }
+
+    @Override
+    public void addAdditionalDrops(Level level, BlockPos pos, List<ItemStack> drops)
+    {
+        super.addAdditionalDrops(level, pos, drops);
+        for(ItemStack stack : inventory)
+        {
+            drops.add(stack);
+        }
+    }
+
+    @Override
+    public void clearContent()
+    {
+        super.clearContent();
+        inventory.clear();
+    }
 }

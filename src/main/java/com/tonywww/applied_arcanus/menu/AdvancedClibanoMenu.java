@@ -1,5 +1,6 @@
 package com.tonywww.applied_arcanus.menu;
 
+import appeng.api.util.IConfigManager;
 import appeng.menu.SlotSemantics;
 import appeng.menu.guisync.GuiSync;
 import appeng.menu.implementations.UpgradeableMenu;
@@ -52,6 +53,12 @@ public class AdvancedClibanoMenu extends UpgradeableMenu<AdvancedClibanoBlockEnt
         cookingTime = getHost().getCookingDuration();
 
         super.broadcastChanges();
+    }
+
+    @Override
+    protected void loadSettingsFromHost(IConfigManager cm)
+    {
+
     }
 
     @Override

@@ -19,6 +19,7 @@ import com.stal111.forbidden_arcanus.core.init.ModDataComponents;
 import com.tonywww.applied_arcanus.init.ModBlockEntities;
 import com.tonywww.applied_arcanus.init.ModBlocks;
 import com.tonywww.applied_arcanus.mixins.ActiveRitualDataAccessor;
+import com.tonywww.applied_arcanus.mixins.EssenceManagerAccessor;
 import com.tonywww.applied_arcanus.mixins.RitualManagerAccessor;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -115,6 +116,54 @@ public class HephaestusForgeSupplierBlockEntity extends AEBaseBlockEntity implem
     public InternalInventory getProxyItemHandler()
     {
         return proxyItemHandler;
+    }
+
+    public int getAurealAmount()
+    {
+        if(forgeBlockEntity == null) return 0;
+        return forgeBlockEntity.getEssenceManager().getAureal();
+    }
+
+    public int getSoulsAmount()
+    {
+        if(forgeBlockEntity == null) return 0;
+        return forgeBlockEntity.getEssenceManager().getSouls();
+    }
+
+    public int getBloodAmount()
+    {
+        if(forgeBlockEntity == null) return 0;
+        return forgeBlockEntity.getEssenceManager().getBlood();
+    }
+
+    public int getExperienceAmount()
+    {
+        if(forgeBlockEntity == null) return 0;
+        return forgeBlockEntity.getEssenceManager().getExperience();
+    }
+
+    public int getAurealCapacity()
+    {
+        if(forgeBlockEntity == null) return 0;
+        return ((EssenceManagerAccessor)forgeBlockEntity.getEssenceManager()).getMaxEssences().aureal();
+    }
+
+    public int getSoulsCapacity()
+    {
+        if(forgeBlockEntity == null) return 0;
+        return ((EssenceManagerAccessor)forgeBlockEntity.getEssenceManager()).getMaxEssences().souls();
+    }
+
+    public int getBloodCapacity()
+    {
+        if(forgeBlockEntity == null) return 0;
+        return ((EssenceManagerAccessor)forgeBlockEntity.getEssenceManager()).getMaxEssences().blood();
+    }
+
+    public int getExperienceCapacity()
+    {
+        if(forgeBlockEntity == null) return 0;
+        return ((EssenceManagerAccessor)forgeBlockEntity.getEssenceManager()).getMaxEssences().experience();
     }
 
     private List<PedestalBlockEntity> collectPedestals(ServerLevel level, BlockPos pos) {

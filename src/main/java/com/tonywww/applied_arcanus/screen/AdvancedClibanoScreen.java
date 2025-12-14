@@ -16,7 +16,7 @@ public class AdvancedClibanoScreen extends UpgradeableScreen<AdvancedClibanoMenu
     private static final ResourceLocation TEXTURE = AppliedArcanus.makeId("textures/gui/advanced_clibano.png");
 
     public AdvancedClibanoScreen(AdvancedClibanoMenu menu, Inventory inv, Component title) {
-        super(menu, inv, title, StyleManager.loadStyleDoc("TODO"));
+        super(menu, inv, title, StyleManager.loadStyleDoc("/screens/advanced_clibano_menu.json"));
     }
 
     @Override

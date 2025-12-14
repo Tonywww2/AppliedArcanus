@@ -1,6 +1,9 @@
 package com.tonywww.applied_arcanus;
 
+import appeng.api.upgrades.Upgrades;
+import appeng.core.definitions.AEItems;
 import com.mojang.logging.LogUtils;
+import com.tonywww.applied_arcanus.init.ModBlocks;
 import com.tonywww.applied_arcanus.init.ModMenus;
 import com.tonywww.applied_arcanus.init.ModRegistryCollector;
 import com.tonywww.applied_arcanus.utils.ModEventHandler;
@@ -39,6 +42,7 @@ public class AppliedArcanus {
     }
 
     private void commonSetup(FMLCommonSetupEvent event) {
+        Upgrades.add(AEItems.SPEED_CARD, ModBlocks.HEPHAESTUS_FORGE_SUPPLIER.get(), 4);
     }
 
     @SubscribeEvent

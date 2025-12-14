@@ -1,0 +1,63 @@
+{
+  "$schema": "schema.json",
+  "includes": [
+    "common/common.json",
+    "common/player_inventory.json",
+    "common/toolbox.json"
+  ],
+  "background": {
+    "texture": "applied_arcanus:textures/gui/hephaestus_forge_supplier.png",
+    "textureWidth": 256,
+    "textureHeight": 256,
+    "srcRect": [0, 0, 176, 207]
+  },
+  "slots": {
+    "UPGRADE": {
+      "right": 0,
+      "top": 0,
+      "grid": "VERTICAL"
+    }
+  },
+  "text": {
+    "title": {
+      "text": { "translate": "block.applied_arcanus.hephaestus_forge_supplier" },
+      "position": { "left": 8, "top": 6 }
+    }
+  },
+  "images": {
+    "aurealBar": {
+      "texture": "applied_arcanus:textures/gui/hephaestus_forge_supplier.png",
+      "srcRect": [0, 225, 4, 31]
+    },
+    "soulsBar": {
+      "texture": "applied_arcanus:textures/gui/hephaestus_forge_supplier.png",
+      "srcRect": [6, 225, 4, 31]
+    },
+    "bloodBar": {
+      "texture": "applied_arcanus:textures/gui/hephaestus_forge_supplier.png",
+      "srcRect": [12, 225, 4, 31]
+    },
+    "experienceBar": {
+      "texture": "applied_arcanus:textures/gui/hephaestus_forge_supplier.png",
+      "srcRect": [18, 225, 4, 31]
+    }
+  },
+  "widgets": {
+    "aurealBar": {
+      "left": 40,
+      "top": 22
+    },
+    "soulsBar": {
+      "left": 52,
+      "top": 22
+    },
+    "bloodBar": {
+      "left": 120,
+      "top": 22
+    },
+    "experienceBar": {
+      "left": 132,
+      "top": 22
+    }
+  }
+}
